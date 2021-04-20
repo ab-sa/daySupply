@@ -4,22 +4,27 @@
 #' definedDailyDose is a function that uses the World Health Organization's (WHO)
 #' defined daily dose method to compute the daily dose and days' supply for prescriptions.
 #' This method assumes an average daily consumption of a fixed dose, the defined daily dose
-#' (DDD),pre-specified by WHO.
+#' (DDD), specified by WHO on their website:https://www.whocc.no/atc_ddd_index/?code=B01AA03.
 #'
-#' @param data           Sample simulated data
-#' @param unit           Unit of defined daily dose. Default: 1 unit = 7.5 mg
+#' @param data           Sample simulated data.
+#'                       Data has multiple rows per person (one row per prescription fill).
+#'                       Required columns include:
+#'                       1. ID: Patient's unique identification number
+#'                       2. ServDate: Date on which each prescription was filled.
+#'                       3. DSPD_QTY: Dispensed quantity: Number of tablets dispensed to patient at each prescription fill.
+#'                       4. strength: Strength of the tablets dispensed.
+#' @param WHO_ddd        The defined daily dose in mg as specified by the WHO.
 #' @param dspd_qty       Dispensed quantity: Number of the dispensed tablets to the patient
-#'                       at each prescription fill
-#' @param strength       Strength of the tablet dispensed in milligrams
-#' @param id             Unique patient identification number
+#'                       at each prescription fill.
+#' @param strength       Strength of the tablet dispensed in milligrams.
+#' @param id             Unique patient identification number.
 #' @param tot_dose_disp  Total dose dispensed:
 #'                       dispensed quantity x strength of the tablets dispensed for
-#'                       each prescription fill
+#'                       each prescription fill.
 #' @param Pt_level       When TRUE, the estimated daily dose and days' supply are averaged
 #'                       for the patient.
 #'
-#' @References
-#' \insertRef{R}{bibtex}
+#' @references
 #' World Health Organization. ATC classification index with DDDs,
 #' https://www.whocc.no/atc_ddd_index/?code=B01AA03 (2019, accessed Dec 6th 2020).
 #'
@@ -36,10 +41,15 @@
 #' DOI: 10.1016/j.jclinepi.2015.05.026.
 #'
 #'
-#' @return DDD_1_Rx_dose:  Daily dose for prescription
-#' @return DDD_1_Rx_DS:    Days' supply for prescription
-#' @return DDD_1_Pt_dose:  Average daily dose for patient
-#' @return DDD_1_Pt_DS:    Average days' supply for patient
+#' @return  definedDailyDose returns a dataset called "DDD_result". This data set includes all the
+#'          variables originally in the data, plus the following:
+#' @return  DDD_Rx_dose:  Daily dose for prescription.
+#' @return  DDD_Rx_DS:    Days' supply for prescription.
+#' @return  DDD_Pt_dose:  Average daily dose for patient.
+#' @return  DDD_Pt_DS:    Average days' supply for patient.
+#'
+#' @importFrom rlang sym
+#'
 #' @export
 #'
 #' @details
@@ -51,18 +61,20 @@
 #' #and 100 tablets of 7 mg warfarin on February 1st.
 #'
 #' ## Using 1 unit DDD:
-#' definedDailyDose(data = data, unit = 1, Pt_level = F,id = "ID",
-#'                  dspd_qty = "DSPD_QTY", strength = "strength",
-#'                  tot_dose_disp = NULL)
+#' definedDailyDose (data = data, WHO_ddd = 7.5, Pt_level = T,
+#'                   id = "ID",dspd_qty = "DSPD_QTY", strength = "strength",
+#'                   tot_dose_disp = NULL)
 #'
-#' #tot_dose_disp= 500mg on January 3rd and 700 mg for February 1st.
-#' #DDD_1_Rx_dose: 7.5 mg for each prescription fill
-#' #DDD_1_Rx_DS is: For Jan 3rd:  500/7.5 = 66.66 day;
-#' #                 For Feb 1st: 700/7.5=93.33 days
+#' #WHO_ddd is set as 7.5 mg as that is the defined daily dose set by WHO for warfarin.
 #'
-#' # pt_level can be set as TRUE to get mean values for each patient
-#' #DDD_1_Pt_dose: (7.5+ 7.5)/2 = 7.5 mg
-#' #DDD_1_Pt_DS: (66.66+93.33)/2 = 79.99 days
+#' #tot_dose_disp: 500mg on January 3rd and 700mg for February 1st.
+#' #DDD_Rx_dose: 7.5 mg for each prescription fill
+#' #DDD_Rx_DS is: For Jan 3rd:  500/7.5 = 66.66 day;
+#'                For Feb 1st: 700/7.5=93.33 days
+#'
+#' #Pt_level can be set as TRUE to get mean values for each patient
+#' #DDD_Pt_dose: (7.5+ 7.5)/2 = 7.5 mg
+#' #DDD_Pt_DS: (66.66+ 93.33)/2 = 79.99 days
 #'
 #'
 definedDailyDose <- function(data, WHO_ddd, dspd_qty, strength, id,
@@ -96,11 +108,12 @@ definedDailyDose <- function(data, WHO_ddd, dspd_qty, strength, id,
 
   if (! is.null(tot_dose_disp)) data[ , "tot_dose_disp"] <- NULL
 
-  data <- as.data.frame(data)
-  return(data)
+  DDD_result <- as.data.frame(data)
+  return(DDD_result)
 }
 
 
+#======================================================
 
 
 #' Fixed tablet
@@ -110,32 +123,44 @@ definedDailyDose <- function(data, WHO_ddd, dspd_qty, strength, id,
 #' supply for prescriptions by assuming an average daily consumption of a
 #' fixed number of tablets (usually 1) per day by the patient.
 #'
-#' @param data           Sample simulated data
+#' @param data           Sample simulated data.
+#'                       Data has multiple rows per person (one row per prescription fill).
+#'                       Required columns include:
+#'                       1. ID: Patient's unique identification number
+#'                       2. ServDate: Date on which each prescription was filled.
+#'                       3. DSPD_QTY: Dispensed quantity: Number of tablets dispensed to patient at each prescription fill.
+#'                       4. strength: Strength of the tablets dispensed.
 #' @param tablet         Number of tablets assumed to be consumed by the patient per day.
-#'                       Default=1
+#'                       Default=1.
 #' @param dspd_qty       Dispensed quantity: Number of the dispensed tablets to the patient
-#'                       at each prescription fill
-#' @param strength       Strength of the tablet dispensed in milligrams
-#' @param id             Unique patient identification number
-#' @param servDate       Date of the prescription fill
+#'                       at each prescription fill.
+#' @param strength       Strength of the tablet dispensed in milligrams.
+#' @param id             Unique patient identification number.
+#' @param serv_date      Date of the prescription fill.
 #' @param tot_dose_disp  Total dose dispensed:
 #'                       dispensed quantity x strength of the tablets dispensed for
-#'                       each prescription fill
+#'                       each prescription fill.
 #' @param Pt_level       When TRUE, the estimated daily dose and days' supply are averaged
-#'                       for the patient
+#'                       for the patient.
 #'
 #'
-#' @References
+#' @references
 #' Tanskanen A, Taipale H, Koponen M, et al. Drug exposure in register-based
 #' research—An expert-opinion based evaluation of methods. PLoS ONE, 2017; 12: e0184070.
 #' DOI: 10.1371/journal.pone.0184070
 #'
+#' @return fixedTablet returns a dataset called "fixedTablet_result". This data set includes all the
+#' variables originally in the data, plus the following:
+#'
 #' @return tot_dose_disp:            Total dose dispensed at prescription fill:
-#'                                   dispensed quantity x strength of the tablet dispensed
-#' @return fixed_1_tab_Rx_dose:      Daily dose for prescription
-#' @return fixed_1_tab_Rx_DS:        Days' supply for prescription
-#' @return fixed_1_tab_Pt_dose:      Average daily dose for patient
-#' @return fixed_1_tab_Pt_DS:        Average days' supply for patient
+#'                                   dispensed quantity x strength of the tablet dispensed.
+#' @return fixed_1_tab_Rx_dose:      Daily dose for prescription.
+#' @return fixed_1_tab_Rx_DS:        Days' supply for prescription.
+#' @return fixed_1_tab_Pt_dose:      Average daily dose for patient.
+#' @return fixed_1_tab_Pt_DS:        Average days' supply for patient.
+#'
+#' @importFrom rlang sym
+#'
 #' @export
 #'
 #' @details
@@ -151,9 +176,9 @@ definedDailyDose <- function(data, WHO_ddd, dspd_qty, strength, id,
 #'             dspd_qty = "DSPD_QTY", strength = "strength",
 #'             serv_date = "ServDate", tot_dose_disp = NULL)
 #'
-#' #tot_dose_disp= 500mg on January 3rd and
-#'                 700 mg for February 1st.
-#' #fixed_1_tab_Rx_dose: 5 mg for the prescription refill on Jan 3rd, 7 mg for prescription refill on Feb 1st.
+#' #tot_dose_disp: 500mg on January 3rd and 700mg for February 1st.
+#' #fixed_1_tab_Rx_dose: 5 mg for the prescription refill on Jan 3rd, 7 mg for prescription
+#'                       refill on Feb 1st.
 #' #fixed_1_tab_Rx_DS is: For Jan 3rd:  500/5= 100 day;  For Feb 1st: 700/7= 100 days
 #'
 #' #pt_level can be set as TRUE to get mean values for each patient
@@ -172,26 +197,24 @@ fixedTablet <- function(data,
                         Pt_level = FALSE) {
 
   if (is.null(tot_dose_disp)) {
-    data <-
-      data %>%
+    data %<>%
       mutate(tot_dose_disp = !!sym(dspd_qty) * !!sym(strength))
   }
   else {
     data[ , "tot_dose_disp"] <- data[ , tot_dose_disp]
   }
 
-  data <- data %>%
+  data %<>%
     group_by(!!sym(id), !!sym(serv_date)) %>%
     mutate(fixed_tab_Rx_dose = sum(tot_dose_disp) / sum(!!sym(dspd_qty)))
 
   data$fixed_tab_Rx_DS <- as.data.frame(data)[ , dspd_qty]
 
   if (Pt_level) {
-    data <-
-      data %>%
+    data %<>%
       group_by(!!sym(id)) %>%
-      mutate(fixed_tab_Pt_dose = mean(fixed_tab_Rx_dose),
-             fixed_tab_Pt_DS = mean(fixed_tab_Rx_DS))
+      mutate(fixed_tab_Pt_dose = mean(.data$fixed_tab_Rx_dose),
+             fixed_tab_Pt_DS = mean(.data$fixed_tab_Rx_DS))
 
     colnames(data)[colnames(data) %in% c("fixed_tab_Pt_dose", "fixed_tab_Pt_DS")] <-
       c(paste0("fixed_", tablet, "_tab_Pt_dose"), paste0("fixed_", tablet, "_tab_Pt_DS"))
@@ -202,14 +225,14 @@ fixedTablet <- function(data,
 
   if (! is.null(tot_dose_disp)) data[ , "tot_dose_disp"] <- NULL
 
-  data <- as.data.frame(data)
-  return(data)
+  fixedTablet_result <- as.data.frame(data)
+  return(fixedTablet_result)
 }
 
 
 
 
-
+#======================================================
 
 #' Fixed window
 #'
@@ -219,31 +242,44 @@ fixedTablet <- function(data,
 #' for all patients, reflecting the medication supply policies of most medication insurance
 #' plans.
 #'
-#' @param data           Sample simulated data
+#' @param data           Sample simulated data.
+#'                       Data has multiple rows per person (one row per prescription fill).
+#'                       Required columns include:
+#'                       1. ID: Patient's unique identification number
+#'                       2. ServDate: Date on which each prescription was filled.
+#'                       3. DSPD_QTY: Dispensed quantity: Number of tablets dispensed to patient at each prescription fill.
+#'                       4. strength: Strength of the tablets dispensed.
 #' @param window_length  The number of days that patients' supply of medication is assumed to
-#'                       last after each prescription refill. Default= 90 days
+#'                       last after each prescription refill. Default= 90 days.
 #' @param dspd_qty       Dispensed quantity: Number of the dispensed tablets to the patient
-#'                       at each prescription fill
-#' @param strength       Strength of the tablet dispensed in milligrams
-#' @param id             Unique patient identification number
-#' @param serv_date      Date of the prescription fill
+#'                       at each prescription fill.
+#' @param strength       Strength of the tablet dispensed in milligrams.
+#' @param id             Unique patient identification number.
+#' @param serv_date      Date of the prescription fill.
 #' @param tot_dose_disp  Total dose dispensed:
 #'                       dispensed quantity x strength of the tablets dispensed for
-#'                       each prescription fill
+#'                       each prescription fill.
 #' @param Pt_level       When TRUE, the estimated daily dose and days' supply are averaged
-#'                       for the patient
+#'                       for the patient.
 #'
-#' @References
+#' @references
 #' Tanskanen A, Taipale H, Koponen M, et al. Drug exposure in register-based
 #' research—An expert-opinion based evaluation of methods. PLoS ONE, 2017; 12: e0184070.
 #' DOI: 10.1371/journal.pone.0184070.
 #'
+#' @return fixedWindow returns a dataset called "fixedWindow_result". This data set includes all the
+#' variables originally in the data, plus the following:
+#'
 #' @return tot_dose_disp:                 Total dose dispensed at prescription fill:
-#'                                        dispensed quantity x strength of the tablet dispensed
-#' @return fixed_window_90_wind_Rx_dose:  Daily dose for prescription
-#' @return fixed_90_wind_Rx_DS:           Days' supply for prescription
-#' @return fixed_90_wind_Pt_dose:         Average daily dose for patient
-#' @return fixed_90_wind_Pt_DS:           Average days' supply for patient
+#'                                        dispensed quantity x strength of the tablet
+#'                                        dispensed.
+#' @return fixed_window_90_wind_Rx_dose:  Daily dose for prescription.
+#' @return fixed_90_wind_Rx_DS:           Days' supply for prescription.
+#' @return fixed_90_wind_Pt_dose:         Average daily dose for patient.
+#' @return fixed_90_wind_Pt_DS:           Average days' supply for patient.
+#'
+#' @importFrom rlang sym
+#'
 #' @export
 #'
 #' @examples
@@ -256,8 +292,7 @@ fixedTablet <- function(data,
 #'              serv_date = "ServDate", tot_dose_disp =  NULL,
 #'              Pt_level = TRUE)
 #'
-#' #tot_dose_disp = 500mg on January 3rd and
-#' #                700 mg for February 1st.
+#' #tot_dose_disp = 500mg on January 3rd and 700 mg for February 1st.
 #' #fixed_90_wind_Rx_dose : 500/90 = 5.55 mg  for prescription filled on Jan 3rd;
 #'                          700/90=7.77 mg for prescription filled on Feb 1st.
 #' #fixed_90_wind_Rx_DS: 90 days for all prescriptions
@@ -296,8 +331,8 @@ fixedWindow <- function(data,
     data <-
       data %>%
       group_by(!!sym(id)) %>%
-      mutate(fixed_wind_Pt_dose = mean(fixed_wind_Rx_dose),
-             fixed_wind_Pt_DS = mean(fixed_wind_Rx_DS))
+      mutate(fixed_wind_Pt_dose = mean(.data$fixed_wind_Rx_dose),
+             fixed_wind_Pt_DS = mean(.data$fixed_wind_Rx_DS))
 
     colnames(data)[colnames(data) %in% c("fixed_wind_Pt_dose", "fixed_wind_Pt_DS")] <-
       c(paste0("fixed_", window_length, "_wind_Pt_dose"), paste0("fixed_", window_length, "_wind_Pt_DS"))
@@ -308,17 +343,14 @@ fixedWindow <- function(data,
 
   if (! is.null(tot_dose_disp)) data[ , "tot_dose_disp"] <- NULL
 
-  data <- as.data.frame(data)
-  return(data)
+  fixedWindow_result <- as.data.frame(data)
+  return(fixedWindow_result)
 }
 
 
 
 
-
-
-
-
+#======================================================
 #' REWarDS
 #'
 #' @description
@@ -328,11 +360,17 @@ fixedWindow <- function(data,
 #' Model parameters include a minimal universally-available set of variables from prescription
 #' records.
 #'
-#' @param data             Sample simulated data
+#' @param data             Sample simulated data.
+#'                         Data has multiple rows per person (one row per prescription fill).
+#'                         Required columns include:
+#'                         1. ID: Patient's unique identification number
+#'                         2. ServDate: Date on which each prescription was filled.
+#'                         3. DSPD_QTY: Dispensed quantity: Number of tablets dispensed to patient at each prescription fill.
+#'                         4. strength: Strength of the tablets dispensed.
 #' @param dspd_qty         Dispensed quantity: Number of tablets dispensed to the patient in
-#'                         at each prescription fill
-#' @param strength         Strength of the dispensed tablets in milligrams
-#' @param id               Unique patient identification number
+#'                         at each prescription fill.
+#' @param strength         Strength of the dispensed tablets in milligrams.
+#' @param id               Unique patient identification number.
 #' @param gap_handling     Method to handle gaps between prescription fills that are more than
 #'                         the permissible gap. Currently, gaps can be handled in three ways:
 #'                         1) The “None” method: This is the default and it ignores gaps
@@ -345,30 +383,51 @@ fixedWindow <- function(data,
 #'                         now, REWarDS is unable to provide estimates of daily dose based on
 #'                         a single prescription.
 #'                         3) The “Longest consecutive Rx” method: Looks at all periods with
-#'                         consecutive
+#'                         consecutive.
 #'                         prescription refills with gaps between them that do not exceed the
 #'                         permissible gap) during the follow up, it then counts the number of
 #'                         prescription fills in each period, and picks the period with the
 #'                         highest number of prescription fills and estimates the patient's
 #'                         average daily dose during that period.
-#' @param permissible_gap  Gap (in days) allowed between prescription fills
-#' @param serv_date        Date of the prescription fill
+#' @param permissible_gap  Gap (in days) allowed between prescription fills.
+#' @param serv_date        Date of the prescription fill.
 #' @param tot_dose_disp    Total dose dispensed:
 #'                         dispensed quantity x strength of the tablets dispensed for
-#'                         each prescription fill
+#'                         each prescription fill.
 #' @param Pt_level         When TRUE, the estimated dose and days' supply are averaged
-#'                         for the patient
+#'                         for the patient.
 #'
 #'
 #' @Reference
 #' Laird NM and Ware JH. Random-effects models for longitudinal data.
 #' Biometrics 1982; 38: 963-974. DOI: 10.2307/2529876
 #'
+#'
+#' @return REWarDS returns a dataset called "REWarDS_result". This data set includes all the
+#' variables originally in the data, plus the following:
+#'
 #' @return tot_dose_disp:            Total dose dispensed at prescription fill:
-#'                                   dispensed quantity x strength of the tablet dispensed
-#' @return REWarDS_avg_daily_dose:   Patient's individualized average daily dose
-#' @return REWarDS_Rx_DS:            Days' supply for prescription
-#' @return REWarDS_Pt_DS:            Average days' supply for patient
+#'                                   dispensed quantity x strength of the tablet dispensed.
+#' @return REWarDS_avg_daily_dose:   Patient's individualized average daily dose.
+#' @return REWarDS_Rx_DS:            Days' supply for prescription.
+#' @return REWarDS_Pt_DS:            Average days' supply for patient.
+#'
+#' @importFrom dplyr %>%
+#' @importFrom dplyr %<>%
+#' @importFrom dplyr mutate
+#' @importFrom dplyr arrange
+#' @importFrom dplyr group_by
+#' @importFrom dplyr filter
+#' @importFrom dplyr select
+#' @importFrom dplyr n
+#' @importFrom rlang sym
+#' @importFrom rlang .data
+#' @importFrom lme4 lmer
+#' @importFrom lme4 lmerControl
+#' @importFrom lme4 .makeCC
+#' @importFrom stats as.formula
+#' @importFrom stats coef
+#'
 #' @export
 #'
 #' @details
@@ -379,19 +438,21 @@ fixedWindow <- function(data,
 #' clearance (e.g. elderly patients). Validation with cohorts of such patients,
 #' or medications other than warfarin, has yet to be done.
 #'
+#'
 #' @examples
 #' #Patient collects 100 tablets of 5 mg warfarin  on January 3rd,
 #' #and 100 tablets of 7 mg warfarin on February 1st.
 #'
-#' REWarDS(data = data, id = "ID", dspd_qty = "DSPD_QTY", s
+#' REWarDS(data = data, id = "ID", dspd_qty = "DSPD_QTY",
 #'        strength = "strength", serv_date = "ServDate",
-#'        tot_dose_disp =  NULL, Pt_level = FALSE)
+#'        tot_dose_disp =  NULL, Pt_level = FALSE,
+#'        gap_handling = "none", permissible_gap = NULL)
 #'
-#' #tot_dose_disp= 500mg on January 3rd and
-#' #               700 mg for February 1st.
-#' #REWarDS_avg_daily_dose: patient's individualized average daily dose obtained from regression analysis
+#' #tot_dose_disp: 500mg on January 3rd and 700mg for February 1st.
+#' #REWarDS_avg_daily_dose: patient's individualized average daily dose obtained
+#'                          from regression analysis
 #' #REWarDS_Rx_DS: 500mg/ patient's individualized average daily dose, for Jan 3rd
-#' #               700mg/patient's individualized average daily dose , for Feb 1st
+#'                 700mg/patient's individualized average daily dose , for Feb 1st
 #'
 #' #Pt_level can be set as TRUE to get mean values for each patient
 #' #REWarDS_Pt_DS: average of days' supply on Jan 3rd and Feb 1st
@@ -403,17 +464,16 @@ fixedWindow <- function(data,
 #'         gap_handling = "Longest consecutive Rx", permissible_gap = 30)
 #'#gap: Gap in number of days between each prescription and the prescription preceding it
 #'#Rx_count: Number of prescriptions in each period of consecutive prescriptions until
-#'#          the permissible gap is exceeded.
-
+#'           the permissible gap is exceeded.
 REWarDS <- function(data,
                     dspd_qty,
                     strength,
                     id,
-                    gap_handling = "none",  ## "Initial consecutive Rx", "Longest consecutive Rx",
+                    gap_handling = "none",
                     permissible_gap = NULL,
                     serv_date,
                     tot_dose_disp =  NULL,
-                    Pt_level = FALSE) {
+                    Pt_level = TRUE) {
 
   if (is.null(tot_dose_disp)) {
     data <-
@@ -431,7 +491,7 @@ REWarDS <- function(data,
       arrange(!!sym(id), !!sym(serv_date)) %>%
       group_by(!!sym(id)) %>%
       mutate(gap = c(0, diff(!!sym(serv_date)))) %>%
-      filter(cumsum(gap > permissible_gap) == 0) -> data
+      filter(cumsum(.data$gap > permissible_gap) == 0) -> data
   }
   if (gap_handling == "Longest consecutive Rx") {
     if (is.null(permissible_gap) | permissible_gap <= 0) stop("A positive value is required for permissible_gap in longest consecutive Rx method.")
@@ -440,14 +500,13 @@ REWarDS <- function(data,
       arrange(!!sym(id), !!sym(serv_date)) %>%
       group_by(!!sym(id)) %>%
       mutate(gap = c(0, diff(!!sym(serv_date))),
-             Index = cumsum(gap > permissible_gap)) %>%
-      group_by(!!sym(id), Index) %>%
+             Index = cumsum(c(0, diff(!!sym(serv_date))) > permissible_gap)) %>%
+      group_by(!!sym(id), .data$Index) %>%
       mutate(Rx_count = n()) %>%
       group_by(!!sym(id)) %>%
-      filter(Rx_count == max(Rx_count)) %>%
-      select(- c(Index)) -> data
+      filter(.data$Rx_count == max(.data$Rx_count)) %>%
+      select(- c(.data$Index)) -> data
   }
-
 
   data_filter <- data %>%
     group_by(!!sym(id)) %>%
@@ -457,7 +516,8 @@ REWarDS <- function(data,
   data_filter <- as.data.frame(data_filter)
 
   REWarDS_formula <- as.formula(paste0("cum_dose ~ cum_time + (cum_time | ", id, ")"))
-  REWarDS_model <- lmer(formula = REWarDS_formula, data = data_filter)
+  REWarDS_model <- lmer(formula = REWarDS_formula, data = data_filter,
+                        control = lmerControl(check.conv.singular = .makeCC(action = "ignore",  tol = 1e-4)))
 
   REWarDS_coef <- coef(REWarDS_model)[[1]]
   REWarDS_coef <- as.data.frame(cbind(id = rownames(REWarDS_coef), REWarDS_coef))
@@ -470,15 +530,15 @@ REWarDS <- function(data,
     data_filter <-
       data_filter %>%
       group_by(!!sym(id)) %>%
-      mutate(REWarDS_Pt_DS = mean(REWarDS_Rx_DS))
+      mutate(REWarDS_Pt_DS = mean(.data$REWarDS_Rx_DS))
   }
 
   colm_list <- c(id, serv_date, "REWarDS_avg_daily_dose", "REWarDS_Rx_DS")
   if (Pt_level) colm_list <- c(colm_list, "REWarDS_Pt_DS")
   data <- merge(data, data_filter[ , colm_list], all.x = TRUE, by = c(id, serv_date))
 
-  data <- as.data.frame(data)
-  return(data)
+  REWarDS_result <- as.data.frame(data)
+  return(REWarDS_result)
 }
 
 

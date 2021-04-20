@@ -13,18 +13,24 @@ REWarDS(
   permissible_gap = NULL,
   serv_date,
   tot_dose_disp = NULL,
-  Pt_level = FALSE
+  Pt_level = TRUE
 )
 }
 \arguments{
-\item{data}{Sample simulated data}
+\item{data}{Sample simulated data.
+Data has multiple rows per person (one row per prescription fill).
+Required columns include:
+1. ID: Patient's unique identification number
+2. ServDate: Date on which each prescription was filled.
+3. DSPD_QTY: Dispensed quantity: Number of tablets dispensed to patient at each prescription fill.
+4. strength: Strength of the tablets dispensed.}
 
 \item{dspd_qty}{Dispensed quantity: Number of tablets dispensed to the patient in
-at each prescription fill}
+at each prescription fill.}
 
-\item{strength}{Strength of the dispensed tablets in milligrams}
+\item{strength}{Strength of the dispensed tablets in milligrams.}
 
-\item{id}{Unique patient identification number}
+\item{id}{Unique patient identification number.}
 
 \item{gap_handling}{Method to handle gaps between prescription fills that are more than
 the permissible gap. Currently, gaps can be handled in three ways:
@@ -38,33 +44,36 @@ there will only be one prescription for REWaRDS to use, and as of
 now, REWarDS is unable to provide estimates of daily dose based on
 a single prescription.
 3) The “Longest consecutive Rx” method: Looks at all periods with
-consecutive
+consecutive.
 prescription refills with gaps between them that do not exceed the
 permissible gap) during the follow up, it then counts the number of
 prescription fills in each period, and picks the period with the
 highest number of prescription fills and estimates the patient's
 average daily dose during that period.}
 
-\item{permissible_gap}{Gap (in days) allowed between prescription fills}
+\item{permissible_gap}{Gap (in days) allowed between prescription fills.}
 
-\item{serv_date}{Date of the prescription fill}
+\item{serv_date}{Date of the prescription fill.}
 
 \item{tot_dose_disp}{Total dose dispensed:
 dispensed quantity x strength of the tablets dispensed for
-each prescription fill}
+each prescription fill.}
 
 \item{Pt_level}{When TRUE, the estimated dose and days' supply are averaged
-for the patient}
+for the patient.}
 }
 \value{
+REWarDS returns a dataset called "REWarDS_result". This data set includes all the
+variables originally in the data, plus the following:
+
 tot_dose_disp:            Total dose dispensed at prescription fill:
-                                  dispensed quantity x strength of the tablet dispensed
+                                  dispensed quantity x strength of the tablet dispensed.
 
-REWarDS_avg_daily_dose:   Patient's individualized average daily dose
+REWarDS_avg_daily_dose:   Patient's individualized average daily dose.
 
-REWarDS_Rx_DS:            Days' supply for prescription
+REWarDS_Rx_DS:            Days' supply for prescription.
 
-REWarDS_Pt_DS:            Average days' supply for patient
+REWarDS_Pt_DS:            Average days' supply for patient.
 }
 \description{
 REWarDS (Random Effects Warfarin Days' Supply) is a function that estimates patients'
@@ -85,15 +94,16 @@ or medications other than warfarin, has yet to be done.
 #Patient collects 100 tablets of 5 mg warfarin  on January 3rd,
 #and 100 tablets of 7 mg warfarin on February 1st.
 
-REWarDS(data = data, id = "ID", dspd_qty = "DSPD_QTY", s
+REWarDS(data = data, id = "ID", dspd_qty = "DSPD_QTY",
        strength = "strength", serv_date = "ServDate",
-       tot_dose_disp =  NULL, Pt_level = FALSE)
+       tot_dose_disp =  NULL, Pt_level = FALSE,
+       gap_handling = "none", permissible_gap = NULL)
 
-#tot_dose_disp= 500mg on January 3rd and
-#               700 mg for February 1st.
-#REWarDS_avg_daily_dose: patient's individualized average daily dose obtained from regression analysis
+#tot_dose_disp: 500mg on January 3rd and 700mg for February 1st.
+#REWarDS_avg_daily_dose: patient's individualized average daily dose obtained
+                         from regression analysis
 #REWarDS_Rx_DS: 500mg/ patient's individualized average daily dose, for Jan 3rd
-#               700mg/patient's individualized average daily dose , for Feb 1st
+                700mg/patient's individualized average daily dose , for Feb 1st
 
 #Pt_level can be set as TRUE to get mean values for each patient
 #REWarDS_Pt_DS: average of days' supply on Jan 3rd and Feb 1st
@@ -105,5 +115,5 @@ REWarDS(data = data, id = "ID", dspd_qty = "DSPD_QTY",
         gap_handling = "Longest consecutive Rx", permissible_gap = 30)
 #gap: Gap in number of days between each prescription and the prescription preceding it
 #Rx_count: Number of prescriptions in each period of consecutive prescriptions until
-#          the permissible gap is exceeded.
+          the permissible gap is exceeded.
 }

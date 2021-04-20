@@ -16,38 +16,48 @@ fixedWindow(
 )
 }
 \arguments{
-\item{data}{Sample simulated data}
+\item{data}{Sample simulated data.
+Data has multiple rows per person (one row per prescription fill).
+Required columns include:
+1. ID: Patient's unique identification number
+2. ServDate: Date on which each prescription was filled.
+3. DSPD_QTY: Dispensed quantity: Number of tablets dispensed to patient at each prescription fill.
+4. strength: Strength of the tablets dispensed.}
 
 \item{window_length}{The number of days that patients' supply of medication is assumed to
-last after each prescription refill. Default= 90 days}
+last after each prescription refill. Default= 90 days.}
 
 \item{dspd_qty}{Dispensed quantity: Number of the dispensed tablets to the patient
-at each prescription fill}
+at each prescription fill.}
 
-\item{strength}{Strength of the tablet dispensed in milligrams}
+\item{strength}{Strength of the tablet dispensed in milligrams.}
 
-\item{id}{Unique patient identification number}
+\item{id}{Unique patient identification number.}
 
-\item{serv_date}{Date of the prescription fill}
+\item{serv_date}{Date of the prescription fill.}
 
 \item{tot_dose_disp}{Total dose dispensed:
 dispensed quantity x strength of the tablets dispensed for
-each prescription fill}
+each prescription fill.}
 
 \item{Pt_level}{When TRUE, the estimated daily dose and days' supply are averaged
-for the patient}
+for the patient.}
 }
 \value{
+fixedWindow returns a dataset called "fixedWindow_result". This data set includes all the
+variables originally in the data, plus the following:
+
 tot_dose_disp:                 Total dose dispensed at prescription fill:
-                                       dispensed quantity x strength of the tablet dispensed
+                                       dispensed quantity x strength of the tablet
+                                       dispensed.
 
-fixed_window_90_wind_Rx_dose:  Daily dose for prescription
+fixed_window_90_wind_Rx_dose:  Daily dose for prescription.
 
-fixed_90_wind_Rx_DS:           Days' supply for prescription
+fixed_90_wind_Rx_DS:           Days' supply for prescription.
 
-fixed_90_wind_Pt_dose:         Average daily dose for patient
+fixed_90_wind_Pt_dose:         Average daily dose for patient.
 
-fixed_90_wind_Pt_DS:           Average days' supply for patient
+fixed_90_wind_Pt_DS:           Average days' supply for patient.
 }
 \description{
 fixedWindow is a function that computes the daily dose and days' supply for
@@ -65,8 +75,7 @@ plans.
              serv_date = "ServDate", tot_dose_disp =  NULL,
              Pt_level = TRUE)
 
-#tot_dose_disp = 500mg on January 3rd and
-#                700 mg for February 1st.
+#tot_dose_disp = 500mg on January 3rd and 700 mg for February 1st.
 #fixed_90_wind_Rx_dose : 500/90 = 5.55 mg  for prescription filled on Jan 3rd;
                          700/90=7.77 mg for prescription filled on Feb 1st.
 #fixed_90_wind_Rx_DS: 90 days for all prescriptions
@@ -77,4 +86,9 @@ plans.
 
 
 
+}
+\references{
+Tanskanen A, Taipale H, Koponen M, et al. Drug exposure in register-based
+research—An expert-opinion based evaluation of methods. PLoS ONE, 2017; 12: e0184070.
+DOI: 10.1371/journal.pone.0184070.
 }
