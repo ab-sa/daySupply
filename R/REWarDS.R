@@ -81,8 +81,7 @@ definedDailyDose <- function(data, WHO_ddd, dspd_qty, strength, id,
                              tot_dose_disp = NULL, Pt_level = FALSE) {
 
   if (is.null(tot_dose_disp)) {
-    data <-
-      data %>%
+    data %<>%
       mutate(tot_dose_disp = !!sym(dspd_qty) * !!sym(strength))
   }
   else {
@@ -90,14 +89,12 @@ definedDailyDose <- function(data, WHO_ddd, dspd_qty, strength, id,
   }
 
   data[ , "DDD_Rx_dose"] <- WHO_ddd
-  data <-
-    data %>%
+  data %<>%
     mutate(DDD_Rx_DS = tot_dose_disp / (WHO_ddd))
   colnames(data)[colnames(data) == "DDD_Rx_DS"] <- "DDD_Rx_DS"
 
   if (Pt_level) {
-    data <-
-      data %>%
+    data %<>%
       group_by(!!sym(id)) %>%
       mutate(DDD_Pt_dose = mean(WHO_ddd),
              DDD_Pt_DS = mean(tot_dose_disp / (WHO_ddd)))
@@ -313,23 +310,21 @@ fixedWindow <- function(data,
                         Pt_level = FALSE) {
 
   if (is.null(tot_dose_disp)) {
-    data <-
-      data %>%
+    data %<>%
       mutate(tot_dose_disp = !!sym(dspd_qty) * !!sym(strength))
   }
   else {
     data[ , "tot_dose_disp"] <- data[ , tot_dose_disp]
   }
 
-  data <- data %>%
+  data %<>%
     group_by(!!sym(id), !!sym(serv_date)) %>%
     mutate(fixed_wind_Rx_dose = sum(tot_dose_disp) / window_length)
 
   data$fixed_wind_Rx_DS <- window_length
 
   if (Pt_level) {
-    data <-
-      data %>%
+    data %<>%
       group_by(!!sym(id)) %>%
       mutate(fixed_wind_Pt_dose = mean(.data$fixed_wind_Rx_dose),
              fixed_wind_Pt_DS = mean(.data$fixed_wind_Rx_DS))
@@ -413,7 +408,7 @@ fixedWindow <- function(data,
 #' @return REWarDS_Pt_DS:            Average days' supply for patient.
 #'
 #' @importFrom dplyr %>%
-#' @importFrom dplyr %<>%
+#' @importFrom magrittr %<>%
 #' @importFrom dplyr mutate
 #' @importFrom dplyr arrange
 #' @importFrom dplyr group_by
@@ -476,8 +471,7 @@ REWarDS <- function(data,
                     Pt_level = TRUE) {
 
   if (is.null(tot_dose_disp)) {
-    data <-
-      data %>%
+    data %<>%
       mutate(tot_dose_disp = !!sym(dspd_qty) * !!sym(strength))
   }
   else {
@@ -487,16 +481,16 @@ REWarDS <- function(data,
   if (gap_handling == "Initial consecutive Rx") {
     if (is.null(permissible_gap) | permissible_gap <= 0) stop("A positive value is required for permissible_gap in consecutive Rx method.")
 
-    data %>%
+    data %<>%
       arrange(!!sym(id), !!sym(serv_date)) %>%
       group_by(!!sym(id)) %>%
       mutate(gap = c(0, diff(!!sym(serv_date)))) %>%
-      filter(cumsum(.data$gap > permissible_gap) == 0) -> data
+      filter(cumsum(.data$gap > permissible_gap) == 0)
   }
   if (gap_handling == "Longest consecutive Rx") {
     if (is.null(permissible_gap) | permissible_gap <= 0) stop("A positive value is required for permissible_gap in longest consecutive Rx method.")
 
-    data %>%
+    data %<>%
       arrange(!!sym(id), !!sym(serv_date)) %>%
       group_by(!!sym(id)) %>%
       mutate(gap = c(0, diff(!!sym(serv_date))),
@@ -505,10 +499,11 @@ REWarDS <- function(data,
       mutate(Rx_count = n()) %>%
       group_by(!!sym(id)) %>%
       filter(.data$Rx_count == max(.data$Rx_count)) %>%
-      select(- c(.data$Index)) -> data
+      select(- c(.data$Index))
   }
 
-  data_filter <- data %>%
+  data_filter <-
+    data %>%
     group_by(!!sym(id)) %>%
     mutate(cum_time = as.numeric(difftime(!!sym(serv_date), (!!sym(serv_date))[1], units = "days")) / 30,
            cum_dose = (cumsum(c(0, tot_dose_disp))[- (n() + 1)]) / 30) %>%
@@ -527,8 +522,7 @@ REWarDS <- function(data,
   data_filter$REWarDS_Rx_DS <- data_filter$tot_dose_disp / data_filter$REWarDS_avg_daily_dose
 
   if (Pt_level) {
-    data_filter <-
-      data_filter %>%
+    data_filter %<>%
       group_by(!!sym(id)) %>%
       mutate(REWarDS_Pt_DS = mean(.data$REWarDS_Rx_DS))
   }
