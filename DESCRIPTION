@@ -1,15 +1,16 @@
 Package: daySupply
 Type: Package
-Title: Calculating Days' supply and daily dose of prescriptions
+Title: Calculating Days' supply and Daily Dose of Prescriptions
 Version: 0.1.0
-Author: c(person("Abdollah", "Safari", email = "a.saffari72@gmail.com", role = c("aut", "cre"),
-                 "Shahrzad", "Salmasi", email = "shahrzad.salmasi@ubc.ca", role = c("aut"),
-                 "Peter", "Loewen", email = "peter.loewen@ubc.ca", role = c("aut") ))
+Authors@R: c(
+    person("Abdollah", "Safari", email = "a.saffari72@gmail.com", role = c("aut", "cre")),
+    person("Shahrzad", "Salmasi", email = "shahrzad.salmasi@ubc.ca", role = c("aut")),
+    person("Peter", "Loewen", email = "peter.loewen@ubc.ca", role = c("aut")))
 Maintainer: Abdollah Safari <a.saffari72@gmail.com>
 Description: This is a package for computing daily dose (and subsequently days' supply) for prescription refills using the following methods: Fixed window, fixed tablet, defined daily dose (DDD), and REWarDS. Daily dose is the computed dose that the patient takes every day. For medications with fixed dosing (e.g. Direct Oral Anticoagulants) this is known and does not need to be estimated.For medications with varying dose such as warfarin, however, the daily dose should be assumed or estimated to allow measurement of drug exposure. Days’ supply is the number of days that patients’ supply of medication will last after each prescription fill. Estimating days’ supply is necessary to calculate drug exposure. The package computes days’ supply and daily dose at both the prescription and patient levels. Results at the prescription level are denoted with “-Rx-” and those at patient level are denoted with “-Pt-”.
-License: GPL3
+Depends: R (>= 3.5.0)
+License: GPL (>=3)
 Encoding: UTF-8
-LazyData: true
 RoxygenNote: 7.1.1
 Imports:
   dplyr,
