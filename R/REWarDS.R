@@ -60,17 +60,31 @@
 #' #Patient collects 100 tablets of 5 mg warfarin on January 3rd,
 #' #and 100 tablets of 7 mg warfarin on February 1st.
 #'
-#' ## Using 1 unit DDD:
-#' definedDailyDose (data = data, WHO_ddd = 7.5, Pt_level = T,
-#'                   id = "ID",dspd_qty = "DSPD_QTY", strength = "strength",
-#'                   tot_dose_disp = NULL)
+#' #Generate a simulated dataset
+#'
+#' library(dplyr)
+#' n_patients <- 10
+#' n_records <- 80
+#' data <- data.frame(ID = rep(c(1 : n_patients), each = n_records))
+#' data %>%
+#'   group_by(ID) %>%
+#'   mutate(ServDate = as.Date('2020/01/01') + abs(round(rnorm(n = 80, 700, 330))),
+#'          DSPD_QTY = abs(round(rnorm(n = 80, 43, 28))),
+#'          strength = abs(round(rnorm(n = 80, 4, 1))))  -> data
+#' data <- as.data.frame(data)
+#'
+#' # Using 1 unit DDD:
+#'
+#' data_new <- definedDailyDose (data, WHO_ddd = 7.5, Pt_level = TRUE,
+#'                               id = "ID",dspd_qty = "DSPD_QTY", strength = "strength",
+#'                               tot_dose_disp = NULL)
 #'
 #' #WHO_ddd is set as 7.5 mg as that is the defined daily dose set by WHO for warfarin.
 #'
 #' #tot_dose_disp: 500mg on January 3rd and 700mg for February 1st.
 #' #DDD_Rx_dose: 7.5 mg for each prescription fill
 #' #DDD_Rx_DS is: For Jan 3rd:  500/7.5 = 66.66 day;
-#'                For Feb 1st: 700/7.5=93.33 days
+#' #              For Feb 1st: 700/7.5=93.33 days
 #'
 #' #Pt_level can be set as TRUE to get mean values for each patient
 #' #DDD_Pt_dose: (7.5+ 7.5)/2 = 7.5 mg
@@ -168,21 +182,33 @@ definedDailyDose <- function(data, WHO_ddd, dspd_qty, strength, id,
 #' #Patient collects 100 tablets of 5 mg warfarin  on January 3rd,
 #' #and 100 tablets of 7 mg warfarin on February 1st.
 #'
+#' #Generate a simulated dataset
+#'
+#' library(dplyr)
+#' n_patients <- 10
+#' n_records <- 80
+#' data <- data.frame(ID = rep(c(1 : n_patients), each = n_records))
+#' data %>%
+#'   group_by(ID) %>%
+#'   mutate(ServDate = as.Date('2020/01/01') + abs(round(rnorm(n = 80, 700, 330))),
+#'          DSPD_QTY = abs(round(rnorm(n = 80, 43, 28))),
+#'          strength = abs(round(rnorm(n = 80, 4, 1))))  -> data
+#' data <- as.data.frame(data)
+#'
 #' #Assuming consumption of 1 tablet per day:
-#' fixedTablet(data = data, tablet = 1, Pt_level = F, id = "ID",
-#'             dspd_qty = "DSPD_QTY", strength = "strength",
-#'             serv_date = "ServDate", tot_dose_disp = NULL)
+#'
+#' data_new <- fixedTablet(data, tablet = 1, Pt_level = FALSE, id = "ID",
+#'                         dspd_qty = "DSPD_QTY", strength = "strength",
+#'                         serv_date = "ServDate", tot_dose_disp = NULL)
 #'
 #' #tot_dose_disp: 500mg on January 3rd and 700mg for February 1st.
 #' #fixed_1_tab_Rx_dose: 5 mg for the prescription refill on Jan 3rd, 7 mg for prescription
-#'                       refill on Feb 1st.
+#' #                     refill on Feb 1st.
 #' #fixed_1_tab_Rx_DS is: For Jan 3rd:  500/5= 100 day;  For Feb 1st: 700/7= 100 days
 #'
 #' #pt_level can be set as TRUE to get mean values for each patient
 #' #DDD_1_Pt_dose: (5+ 7)/2 = 6 mg
 #' #DDD_1_Pt_DS: (100+100)/2 = 100 days
-#'
-#'
 #'
 fixedTablet <- function(data,
                         tablet = 1,
@@ -283,22 +309,33 @@ fixedTablet <- function(data,
 #' #Patient collects 100 tablets of 5 mg warfarin  on January 3rd,
 #' #and 100 tablets of 7 mg warfarin on February 1st.
 #'
+#'#' #Generate a simulated dataset
+#'
+#' library(dplyr)
+#' n_patients <- 10
+#' n_records <- 80
+#' data <- data.frame(ID = rep(c(1 : n_patients), each = n_records))
+#' data %>%
+#'   group_by(ID) %>%
+#'   mutate(ServDate = as.Date('2020/01/01') + abs(round(rnorm(n = 80, 700, 330))),
+#'          DSPD_QTY = abs(round(rnorm(n = 80, 43, 28))),
+#'          strength = abs(round(rnorm(n = 80, 4, 1))))  -> data
+#' data <- as.data.frame(data)
+#'
 #' #Assuming window length of 90 days
-#'  fixedWindow(data = data, window_length = 90, id = "ID",
-#'              dspd_qty = "DSPD_QTY", strength = "strength",
-#'              serv_date = "ServDate", tot_dose_disp =  NULL,
-#'              Pt_level = TRUE)
+#' data_new <- fixedWindow(data, window_length = 90, id = "ID",
+#'                         dspd_qty = "DSPD_QTY", strength = "strength",
+#'                         serv_date = "ServDate", tot_dose_disp =  NULL,
+#'                         Pt_level = TRUE)
 #'
 #' #tot_dose_disp = 500mg on January 3rd and 700 mg for February 1st.
 #' #fixed_90_wind_Rx_dose : 500/90 = 5.55 mg  for prescription filled on Jan 3rd;
-#'                          700/90=7.77 mg for prescription filled on Feb 1st.
+#' #                        700/90=7.77 mg for prescription filled on Feb 1st.
 #' #fixed_90_wind_Rx_DS: 90 days for all prescriptions
 #'
 #' #pt_level can be set as TRUE to get mean values for each patient
 #' #fixed_90_wind_Pt_dose : (5.55 + 7.77)/2 = 6.66 mg
 #' #fixed_90_wind_Pt_DS: (90 + 90)/2 = 90
-#'
-#'
 #'
 fixedWindow <- function(data,
                         window_length = 90,
@@ -438,28 +475,42 @@ fixedWindow <- function(data,
 #' #Patient collects 100 tablets of 5 mg warfarin  on January 3rd,
 #' #and 100 tablets of 7 mg warfarin on February 1st.
 #'
-#' REWarDS(data = data, id = "ID", dspd_qty = "DSPD_QTY",
-#'        strength = "strength", serv_date = "ServDate",
-#'        tot_dose_disp =  NULL, Pt_level = FALSE,
-#'        gap_handling = "none", permissible_gap = NULL)
+#'#' #Generate a simulated dataset
+#'
+#' library(dplyr)
+#' n_patients <- 10
+#' n_records <- 80
+#' data <- data.frame(ID = rep(c(1 : n_patients), each = n_records))
+#' data %>%
+#'   group_by(ID) %>%
+#'   mutate(ServDate = as.Date('2020/01/01') + abs(round(rnorm(n = 80, 700, 330))),
+#'          DSPD_QTY = abs(round(rnorm(n = 80, 43, 28))),
+#'          strength = abs(round(rnorm(n = 80, 4, 1))))  -> data
+#' data <- as.data.frame(data)
+#'
+#'
+#' data_new <- REWarDS(data, id = "ID", dspd_qty = "DSPD_QTY",
+#'                     strength = "strength", serv_date = "ServDate",
+#'                     tot_dose_disp =  NULL, Pt_level = FALSE,
+#'                     gap_handling = "none", permissible_gap = NULL)
 #'
 #' #tot_dose_disp: 500mg on January 3rd and 700mg for February 1st.
 #' #REWarDS_avg_daily_dose: patient's individualized average daily dose obtained
-#'                          from regression analysis
+#' #                        from regression analysis
 #' #REWarDS_Rx_DS: 500mg/ patient's individualized average daily dose, for Jan 3rd
-#'                 700mg/patient's individualized average daily dose , for Feb 1st
+#' #               700mg/patient's individualized average daily dose , for Feb 1st
 #'
 #' #Pt_level can be set as TRUE to get mean values for each patient
 #' #REWarDS_Pt_DS: average of days' supply on Jan 3rd and Feb 1st
 #'
 #' #Gap handling method can be specified
-#' REWarDS(data = data, id = "ID", dspd_qty = "DSPD_QTY",
-#'         strength = "strength", serv_date = "ServDate",
-#'         tot_dose_disp =  NULL, Pt_level = TRUE,
-#'         gap_handling = "Longest consecutive Rx", permissible_gap = 30)
-#'#gap: Gap in number of days between each prescription and the prescription preceding it
-#'#Rx_count: Number of prescriptions in each period of consecutive prescriptions until
-#'           the permissible gap is exceeded.
+#' data_new <- REWarDS(data, id = "ID", dspd_qty = "DSPD_QTY",
+#'                     strength = "strength", serv_date = "ServDate",
+#'                     tot_dose_disp =  NULL, Pt_level = TRUE,
+#'                     gap_handling = "Longest consecutive Rx", permissible_gap = 30)
+#' #gap: Gap in number of days between each prescription and the prescription preceding it
+#' #Rx_count: Number of prescriptions in each period of consecutive prescriptions until
+#' #          the permissible gap is exceeded.
 REWarDS <- function(data,
                     dspd_qty,
                     strength,

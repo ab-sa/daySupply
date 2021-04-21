@@ -69,22 +69,33 @@ plans.
 #Patient collects 100 tablets of 5 mg warfarin  on January 3rd,
 #and 100 tablets of 7 mg warfarin on February 1st.
 
+#' #Generate a simulated dataset
+
+library(dplyr)
+n_patients <- 10
+n_records <- 80
+data <- data.frame(ID = rep(c(1 : n_patients), each = n_records))
+data \%>\%
+  group_by(ID) \%>\%
+  mutate(ServDate = as.Date('2020/01/01') + abs(round(rnorm(n = 80, 700, 330))),
+         DSPD_QTY = abs(round(rnorm(n = 80, 43, 28))),
+         strength = abs(round(rnorm(n = 80, 4, 1))))  -> data
+data <- as.data.frame(data)
+
 #Assuming window length of 90 days
- fixedWindow(data = data, window_length = 90, id = "ID",
-             dspd_qty = "DSPD_QTY", strength = "strength",
-             serv_date = "ServDate", tot_dose_disp =  NULL,
-             Pt_level = TRUE)
+data_new <- fixedWindow(data, window_length = 90, id = "ID",
+                        dspd_qty = "DSPD_QTY", strength = "strength",
+                        serv_date = "ServDate", tot_dose_disp =  NULL,
+                        Pt_level = TRUE)
 
 #tot_dose_disp = 500mg on January 3rd and 700 mg for February 1st.
 #fixed_90_wind_Rx_dose : 500/90 = 5.55 mg  for prescription filled on Jan 3rd;
-                         700/90=7.77 mg for prescription filled on Feb 1st.
+#                        700/90=7.77 mg for prescription filled on Feb 1st.
 #fixed_90_wind_Rx_DS: 90 days for all prescriptions
 
 #pt_level can be set as TRUE to get mean values for each patient
 #fixed_90_wind_Pt_dose : (5.55 + 7.77)/2 = 6.66 mg
 #fixed_90_wind_Pt_DS: (90 + 90)/2 = 90
-
-
 
 }
 \references{

@@ -94,26 +94,40 @@ or medications other than warfarin, has yet to be done.
 #Patient collects 100 tablets of 5 mg warfarin  on January 3rd,
 #and 100 tablets of 7 mg warfarin on February 1st.
 
-REWarDS(data = data, id = "ID", dspd_qty = "DSPD_QTY",
-       strength = "strength", serv_date = "ServDate",
-       tot_dose_disp =  NULL, Pt_level = FALSE,
-       gap_handling = "none", permissible_gap = NULL)
+#' #Generate a simulated dataset
+
+library(dplyr)
+n_patients <- 10
+n_records <- 80
+data <- data.frame(ID = rep(c(1 : n_patients), each = n_records))
+data \%>\%
+  group_by(ID) \%>\%
+  mutate(ServDate = as.Date('2020/01/01') + abs(round(rnorm(n = 80, 700, 330))),
+         DSPD_QTY = abs(round(rnorm(n = 80, 43, 28))),
+         strength = abs(round(rnorm(n = 80, 4, 1))))  -> data
+data <- as.data.frame(data)
+
+
+data_new <- REWarDS(data, id = "ID", dspd_qty = "DSPD_QTY",
+                    strength = "strength", serv_date = "ServDate",
+                    tot_dose_disp =  NULL, Pt_level = FALSE,
+                    gap_handling = "none", permissible_gap = NULL)
 
 #tot_dose_disp: 500mg on January 3rd and 700mg for February 1st.
 #REWarDS_avg_daily_dose: patient's individualized average daily dose obtained
-                         from regression analysis
+#                        from regression analysis
 #REWarDS_Rx_DS: 500mg/ patient's individualized average daily dose, for Jan 3rd
-                700mg/patient's individualized average daily dose , for Feb 1st
+#               700mg/patient's individualized average daily dose , for Feb 1st
 
 #Pt_level can be set as TRUE to get mean values for each patient
 #REWarDS_Pt_DS: average of days' supply on Jan 3rd and Feb 1st
 
 #Gap handling method can be specified
-REWarDS(data = data, id = "ID", dspd_qty = "DSPD_QTY",
-        strength = "strength", serv_date = "ServDate",
-        tot_dose_disp =  NULL, Pt_level = TRUE,
-        gap_handling = "Longest consecutive Rx", permissible_gap = 30)
+data_new <- REWarDS(data, id = "ID", dspd_qty = "DSPD_QTY",
+                    strength = "strength", serv_date = "ServDate",
+                    tot_dose_disp =  NULL, Pt_level = TRUE,
+                    gap_handling = "Longest consecutive Rx", permissible_gap = 30)
 #gap: Gap in number of days between each prescription and the prescription preceding it
 #Rx_count: Number of prescriptions in each period of consecutive prescriptions until
-          the permissible gap is exceeded.
+#          the permissible gap is exceeded.
 }

@@ -65,17 +65,31 @@ However, its accuracy has been shown to differ between drug classes.
 #Patient collects 100 tablets of 5 mg warfarin on January 3rd,
 #and 100 tablets of 7 mg warfarin on February 1st.
 
-## Using 1 unit DDD:
-definedDailyDose (data = data, WHO_ddd = 7.5, Pt_level = T,
-                  id = "ID",dspd_qty = "DSPD_QTY", strength = "strength",
-                  tot_dose_disp = NULL)
+#Generate a simulated dataset
+
+library(dplyr)
+n_patients <- 10
+n_records <- 80
+data <- data.frame(ID = rep(c(1 : n_patients), each = n_records))
+data \%>\%
+  group_by(ID) \%>\%
+  mutate(ServDate = as.Date('2020/01/01') + abs(round(rnorm(n = 80, 700, 330))),
+         DSPD_QTY = abs(round(rnorm(n = 80, 43, 28))),
+         strength = abs(round(rnorm(n = 80, 4, 1))))  -> data
+data <- as.data.frame(data)
+
+# Using 1 unit DDD:
+
+data_new <- definedDailyDose (data, WHO_ddd = 7.5, Pt_level = TRUE,
+                              id = "ID",dspd_qty = "DSPD_QTY", strength = "strength",
+                              tot_dose_disp = NULL)
 
 #WHO_ddd is set as 7.5 mg as that is the defined daily dose set by WHO for warfarin.
 
 #tot_dose_disp: 500mg on January 3rd and 700mg for February 1st.
 #DDD_Rx_dose: 7.5 mg for each prescription fill
 #DDD_Rx_DS is: For Jan 3rd:  500/7.5 = 66.66 day;
-               For Feb 1st: 700/7.5=93.33 days
+#              For Feb 1st: 700/7.5=93.33 days
 
 #Pt_level can be set as TRUE to get mean values for each patient
 #DDD_Pt_dose: (7.5+ 7.5)/2 = 7.5 mg

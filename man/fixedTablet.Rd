@@ -71,21 +71,33 @@ However, its accuracy has been shown to differ between drug classes.
 #Patient collects 100 tablets of 5 mg warfarin  on January 3rd,
 #and 100 tablets of 7 mg warfarin on February 1st.
 
+#Generate a simulated dataset
+
+library(dplyr)
+n_patients <- 10
+n_records <- 80
+data <- data.frame(ID = rep(c(1 : n_patients), each = n_records))
+data \%>\%
+  group_by(ID) \%>\%
+  mutate(ServDate = as.Date('2020/01/01') + abs(round(rnorm(n = 80, 700, 330))),
+         DSPD_QTY = abs(round(rnorm(n = 80, 43, 28))),
+         strength = abs(round(rnorm(n = 80, 4, 1))))  -> data
+data <- as.data.frame(data)
+
 #Assuming consumption of 1 tablet per day:
-fixedTablet(data = data, tablet = 1, Pt_level = F, id = "ID",
-            dspd_qty = "DSPD_QTY", strength = "strength",
-            serv_date = "ServDate", tot_dose_disp = NULL)
+
+data_new <- fixedTablet(data, tablet = 1, Pt_level = FALSE, id = "ID",
+                        dspd_qty = "DSPD_QTY", strength = "strength",
+                        serv_date = "ServDate", tot_dose_disp = NULL)
 
 #tot_dose_disp: 500mg on January 3rd and 700mg for February 1st.
 #fixed_1_tab_Rx_dose: 5 mg for the prescription refill on Jan 3rd, 7 mg for prescription
-                      refill on Feb 1st.
+#                     refill on Feb 1st.
 #fixed_1_tab_Rx_DS is: For Jan 3rd:  500/5= 100 day;  For Feb 1st: 700/7= 100 days
 
 #pt_level can be set as TRUE to get mean values for each patient
 #DDD_1_Pt_dose: (5+ 7)/2 = 6 mg
 #DDD_1_Pt_DS: (100+100)/2 = 100 days
-
-
 
 }
 \references{
