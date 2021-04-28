@@ -17,7 +17,7 @@ fixedWindow(
 }
 \arguments{
 \item{data}{Sample simulated data.
-Data has multiple rows per person (one row per prescription fill).
+Data may have multiple rows per person (one row per prescription fill).
 Required columns include:
 1. ID: Patient's unique identification number
 2. ServDate: Date on which each prescription was filled.
@@ -60,10 +60,9 @@ fixed_90_wind_Pt_dose:         Average daily dose for patient.
 fixed_90_wind_Pt_DS:           Average days' supply for patient.
 }
 \description{
-fixedWindow is a function that computes the daily dose and days' supply for
-prescriptions by assuming a fixed number of days of exposure (usually 90 days)
-for all patients, reflecting the medication supply policies of most medication insurance
-plans.
+Computes the daily dose and days' supply for prescriptions by assuming a
+fixed number of days of exposure (usually 90 days) for all patients,
+reflecting the medication supply policies of most medication insurance plans.
 }
 \examples{
 #Patient collects 100 tablets of 5 mg warfarin  on January 3rd,
@@ -97,9 +96,4 @@ data_new <- fixedWindow(data, window_length = 90, id = "ID",
 #fixed_90_wind_Pt_dose : (5.55 + 7.77)/2 = 6.66 mg
 #fixed_90_wind_Pt_DS: (90 + 90)/2 = 90
 
-}
-\references{
-Tanskanen A, Taipale H, Koponen M, et al. Drug exposure in register-based
-research—An expert-opinion based evaluation of methods. PLoS ONE, 2017; 12: e0184070.
-DOI: 10.1371/journal.pone.0184070.
 }

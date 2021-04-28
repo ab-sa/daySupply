@@ -17,7 +17,7 @@ fixedTablet(
 }
 \arguments{
 \item{data}{Sample simulated data.
-Data has multiple rows per person (one row per prescription fill).
+Data may have multiple rows per person (one row per prescription fill).
 Required columns include:
 1. ID: Patient's unique identification number
 2. ServDate: Date on which each prescription was filled.
@@ -59,9 +59,8 @@ fixed_1_tab_Pt_dose:      Average daily dose for patient.
 fixed_1_tab_Pt_DS:        Average days' supply for patient.
 }
 \description{
-fixedTablet is a function that computes the daily dose and days'
-supply for prescriptions by assuming an average daily consumption of a
-fixed number of tablets (usually 1) per day by the patient.
+Computes the daily dose and days' supply for prescriptions by assuming an average
+daily consumption of a fixed number of tablets (usually 1) per day by the patient.
 }
 \details{
 The fixed tablet method can be used for any medication.
@@ -99,9 +98,4 @@ data_new <- fixedTablet(data, tablet = 1, Pt_level = FALSE, id = "ID",
 #DDD_1_Pt_dose: (5+ 7)/2 = 6 mg
 #DDD_1_Pt_DS: (100+100)/2 = 100 days
 
-}
-\references{
-Tanskanen A, Taipale H, Koponen M, et al. Drug exposure in register-based
-research—An expert-opinion based evaluation of methods. PLoS ONE, 2017; 12: e0184070.
-DOI: 10.1371/journal.pone.0184070
 }

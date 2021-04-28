@@ -16,7 +16,7 @@ definedDailyDose(
 }
 \arguments{
 \item{data}{Sample simulated data.
-Data has multiple rows per person (one row per prescription fill).
+Data may have multiple rows per person (one row per prescription fill).
 Required columns include:
 1. ID: Patient's unique identification number
 2. ServDate: Date on which each prescription was filled.
@@ -52,10 +52,10 @@ DDD_Pt_dose:  Average daily dose for patient.
 DDD_Pt_DS:    Average days' supply for patient.
 }
 \description{
-definedDailyDose is a function that uses the World Health Organization's (WHO)
-defined daily dose method to compute the daily dose and days' supply for prescriptions.
-This method assumes an average daily consumption of a fixed dose, the defined daily dose
-(DDD), specified by WHO on their website:https://www.whocc.no/atc_ddd_index/?code=B01AA03.
+Uses the World Health Organization's (WHO) defined daily dose method to compute the daily
+dose and days' supply for prescriptions. This method assumes an average daily consumption
+of a fixed dose, the defined daily dose (DDD), specified by WHO on their website at
+https://www.whocc.no/atc_ddd_index/?code=B01AA03.
 }
 \details{
 The DDD method can be used for any medication.
@@ -96,20 +96,4 @@ data_new <- definedDailyDose (data, WHO_ddd = 7.5, Pt_level = TRUE,
 #DDD_Pt_DS: (66.66+ 93.33)/2 = 79.99 days
 
 
-}
-\references{
-World Health Organization. ATC classification index with DDDs,
-https://www.whocc.no/atc_ddd_index/?code=B01AA03 (2019, accessed Dec 6th 2020).
-
-WHO Collaborating Centre for Drug Statistics Methodology, Guidelines for
-ATC classification and DDD assignment, 2020. Oslo, 2019.
-
-Tanskanen A, Taipale H, Koponen M, et al. Drug exposure in register-based
-research—An expert-opinion based evaluation of methods. PLoS ONE, 2017; 12: e0184070.
-DOI: 10.1371/journal.pone.0184070.
-
-Sinnott SJ, Polinski JM, Byrne S, et al. Measuring drug exposure: concordance between
-defined daily dose and days' supply depended on drug class.
-Journal of Clinical Epidemiology, 2016; 69: 107-113. 2015/07/07.
-DOI: 10.1016/j.jclinepi.2015.05.026.
 }

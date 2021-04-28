@@ -18,7 +18,7 @@ REWarDS(
 }
 \arguments{
 \item{data}{Sample simulated data.
-Data has multiple rows per person (one row per prescription fill).
+Data may have multiple rows per person (one row per prescription fill).
 Required columns include:
 1. ID: Patient's unique identification number
 2. ServDate: Date on which each prescription was filled.
@@ -76,19 +76,18 @@ REWarDS_Rx_DS:            Days' supply for prescription.
 REWarDS_Pt_DS:            Average days' supply for patient.
 }
 \description{
-REWarDS (Random Effects Warfarin Days' Supply) is a function that estimates patients'
-individualized average daily dose and subsequently, days' supply, by fitting a random effects
-linear regression model to patients' cumulative dose over time.
+Estimates patients' individualized average daily dose and subsequently, days' supply,
+by fitting a random effects linear regression model to patients' cumulative dose over time.
 Model parameters include a minimal universally-available set of variables from prescription
 records.
 }
 \details{
-REWarDS has been validated for warfarin. It demonstrated excellent performance that was
-superior to all current alternative methods for estimating days' supply of warfarin.
-REWarDS could potentially be used for other medications with variable dosing regimens
-(e.g. tacrolimus), or in populations with high inter-individual variability in drug
-clearance (e.g. elderly patients). Validation with cohorts of such patients,
-or medications other than warfarin, has yet to be done.
+REWarDS (Random Effects Warfarin Days' Supply) has been validated for warfarin. It
+demonstrated excellent performance that was superior to all current alternative methods
+for estimating days' supply of warfarin. REWarDS could potentially be used for other
+medications with variable dosing regimens (e.g. tacrolimus), or in populations with
+high inter-individual variability in drug clearance (e.g. elderly patients). Validation
+with cohorts of such patients, or medications other than warfarin, has yet to be done.
 }
 \examples{
 #Patient collects 100 tablets of 5 mg warfarin  on January 3rd,
