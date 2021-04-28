@@ -1,13 +1,13 @@
 #' Defined daily dose
 #'
 #' @description
-#' definedDailyDose is a function that uses the World Health Organization's (WHO)
-#' defined daily dose method to compute the daily dose and days' supply for prescriptions.
-#' This method assumes an average daily consumption of a fixed dose, the defined daily dose
-#' (DDD), specified by WHO on their website:https://www.whocc.no/atc_ddd_index/?code=B01AA03.
+#' Uses the World Health Organization's (WHO) defined daily dose method to compute the daily
+#' dose and days' supply for prescriptions. This method assumes an average daily consumption
+#' of a fixed dose, the defined daily dose (DDD), specified by WHO on their website at
+#' https://www.whocc.no/atc_ddd_index/?code=B01AA03.
 #'
 #' @param data           Sample simulated data.
-#'                       Data has multiple rows per person (one row per prescription fill).
+#'                       Data may have multiple rows per person (one row per prescription fill).
 #'                       Required columns include:
 #'                       1. ID: Patient's unique identification number
 #'                       2. ServDate: Date on which each prescription was filled.
@@ -23,23 +23,6 @@
 #'                       each prescription fill.
 #' @param Pt_level       When TRUE, the estimated daily dose and days' supply are averaged
 #'                       for the patient.
-#'
-#' @references
-#' World Health Organization. ATC classification index with DDDs,
-#' https://www.whocc.no/atc_ddd_index/?code=B01AA03 (2019, accessed Dec 6th 2020).
-#'
-#' WHO Collaborating Centre for Drug Statistics Methodology, Guidelines for
-#' ATC classification and DDD assignment, 2020. Oslo, 2019.
-#'
-#' Tanskanen A, Taipale H, Koponen M, et al. Drug exposure in register-based
-#' research—An expert-opinion based evaluation of methods. PLoS ONE, 2017; 12: e0184070.
-#' DOI: 10.1371/journal.pone.0184070.
-#'
-#' Sinnott SJ, Polinski JM, Byrne S, et al. Measuring drug exposure: concordance between
-#' defined daily dose and days' supply depended on drug class.
-#' Journal of Clinical Epidemiology, 2016; 69: 107-113. 2015/07/07.
-#' DOI: 10.1016/j.jclinepi.2015.05.026.
-#'
 #'
 #' @return  definedDailyDose returns a dataset called "DDD_result". This data set includes all the
 #'          variables originally in the data, plus the following:
@@ -130,12 +113,11 @@ definedDailyDose <- function(data, WHO_ddd, dspd_qty, strength, id,
 #' Fixed tablet
 #'
 #' @description
-#' fixedTablet is a function that computes the daily dose and days'
-#' supply for prescriptions by assuming an average daily consumption of a
-#' fixed number of tablets (usually 1) per day by the patient.
+#' Computes the daily dose and days' supply for prescriptions by assuming an average
+#' daily consumption of a fixed number of tablets (usually 1) per day by the patient.
 #'
 #' @param data           Sample simulated data.
-#'                       Data has multiple rows per person (one row per prescription fill).
+#'                       Data may have multiple rows per person (one row per prescription fill).
 #'                       Required columns include:
 #'                       1. ID: Patient's unique identification number
 #'                       2. ServDate: Date on which each prescription was filled.
@@ -153,12 +135,6 @@ definedDailyDose <- function(data, WHO_ddd, dspd_qty, strength, id,
 #'                       each prescription fill.
 #' @param Pt_level       When TRUE, the estimated daily dose and days' supply are averaged
 #'                       for the patient.
-#'
-#'
-#' @references
-#' Tanskanen A, Taipale H, Koponen M, et al. Drug exposure in register-based
-#' research—An expert-opinion based evaluation of methods. PLoS ONE, 2017; 12: e0184070.
-#' DOI: 10.1371/journal.pone.0184070
 #'
 #' @return fixedTablet returns a dataset called "fixedTablet_result". This data set includes all the
 #' variables originally in the data, plus the following:
@@ -260,13 +236,12 @@ fixedTablet <- function(data,
 #' Fixed window
 #'
 #' @description
-#' fixedWindow is a function that computes the daily dose and days' supply for
-#' prescriptions by assuming a fixed number of days of exposure (usually 90 days)
-#' for all patients, reflecting the medication supply policies of most medication insurance
-#' plans.
+#' Computes the daily dose and days' supply for prescriptions by assuming a
+#' fixed number of days of exposure (usually 90 days) for all patients,
+#' reflecting the medication supply policies of most medication insurance plans.
 #'
 #' @param data           Sample simulated data.
-#'                       Data has multiple rows per person (one row per prescription fill).
+#'                       Data may have multiple rows per person (one row per prescription fill).
 #'                       Required columns include:
 #'                       1. ID: Patient's unique identification number
 #'                       2. ServDate: Date on which each prescription was filled.
@@ -284,11 +259,6 @@ fixedTablet <- function(data,
 #'                       each prescription fill.
 #' @param Pt_level       When TRUE, the estimated daily dose and days' supply are averaged
 #'                       for the patient.
-#'
-#' @references
-#' Tanskanen A, Taipale H, Koponen M, et al. Drug exposure in register-based
-#' research—An expert-opinion based evaluation of methods. PLoS ONE, 2017; 12: e0184070.
-#' DOI: 10.1371/journal.pone.0184070.
 #'
 #' @return fixedWindow returns a dataset called "fixedWindow_result". This data set includes all the
 #' variables originally in the data, plus the following:
@@ -386,14 +356,13 @@ fixedWindow <- function(data,
 #' REWarDS
 #'
 #' @description
-#' REWarDS (Random Effects Warfarin Days' Supply) is a function that estimates patients'
-#' individualized average daily dose and subsequently, days' supply, by fitting a random effects
-#' linear regression model to patients' cumulative dose over time.
+#' Estimates patients' individualized average daily dose and subsequently, days' supply,
+#' by fitting a random effects linear regression model to patients' cumulative dose over time.
 #' Model parameters include a minimal universally-available set of variables from prescription
 #' records.
 #'
 #' @param data             Sample simulated data.
-#'                         Data has multiple rows per person (one row per prescription fill).
+#'                         Data may have multiple rows per person (one row per prescription fill).
 #'                         Required columns include:
 #'                         1. ID: Patient's unique identification number
 #'                         2. ServDate: Date on which each prescription was filled.
@@ -429,12 +398,6 @@ fixedWindow <- function(data,
 #' @param Pt_level         When TRUE, the estimated dose and days' supply are averaged
 #'                         for the patient.
 #'
-#'
-#' @Reference
-#' Laird NM and Ware JH. Random-effects models for longitudinal data.
-#' Biometrics 1982; 38: 963-974. DOI: 10.2307/2529876
-#'
-#'
 #' @return REWarDS returns a dataset called "REWarDS_result". This data set includes all the
 #' variables originally in the data, plus the following:
 #'
@@ -463,12 +426,12 @@ fixedWindow <- function(data,
 #' @export
 #'
 #' @details
-#' REWarDS has been validated for warfarin. It demonstrated excellent performance that was
-#' superior to all current alternative methods for estimating days' supply of warfarin.
-#' REWarDS could potentially be used for other medications with variable dosing regimens
-#' (e.g. tacrolimus), or in populations with high inter-individual variability in drug
-#' clearance (e.g. elderly patients). Validation with cohorts of such patients,
-#' or medications other than warfarin, has yet to be done.
+#' REWarDS (Random Effects Warfarin Days' Supply) has been validated for warfarin. It
+#' demonstrated excellent performance that was superior to all current alternative methods
+#' for estimating days' supply of warfarin. REWarDS could potentially be used for other
+#' medications with variable dosing regimens (e.g. tacrolimus), or in populations with
+#' high inter-individual variability in drug clearance (e.g. elderly patients). Validation
+#' with cohorts of such patients, or medications other than warfarin, has yet to be done.
 #'
 #'
 #' @examples
